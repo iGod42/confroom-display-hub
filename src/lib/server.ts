@@ -1,4 +1,7 @@
 import express, {ErrorRequestHandler} from "express"
+import {Office365} from "./CalendarApi"
+
+const office365 = new Office365()
 
 const app = express()
 
