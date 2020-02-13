@@ -1,0 +1,11 @@
+{
+  "name": "conf_room_display_hub",
+  "version": "0.0.1",
+  "description": "Conference Room Display Hub",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "author": "Robert Spari",
+  "license": "ISC"
+}
