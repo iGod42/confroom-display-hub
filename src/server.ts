@@ -1,9 +1,11 @@
 import express, {ErrorRequestHandler} from "express"
-import {Office365} from "./CalendarApi"
-
-const office365 = new Office365()
+import authorizeRoute from "./routes/authorize"
+import bodyParser from "body-parser"
 
 const app = express()
+app.use(bodyParser.json())
+
+app.use("/authorize", authorizeRoute)
 
 app.use("/", (req, res) => {
 	res.end("hello world")
