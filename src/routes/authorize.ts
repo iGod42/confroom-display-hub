@@ -9,12 +9,10 @@ conf.forEach((item: CalApiConfig) => {
 	const name = item[1]
 
 	router.use(`/${name}/token`, (req, res) => {
-		console.log('in token')
-		theApi.authTokenReceived(req.query.code)
+		theApi.authCodeReceived(req.query.code)
 		res.end("Thanks for registring")
 	})
 	router.use(`/${name}`, (req, res) => {
-		console.log('in normal')
 		res.redirect(theApi.getAuthorizationUrl())
 	})
 })

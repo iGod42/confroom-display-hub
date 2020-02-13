@@ -1,5 +1,5 @@
 export interface ICalendarApi {
 	getAuthorizationUrl(): string,
 	
-	authTokenReceived(authToken: string): void
+	authCodeReceived(authCode: string): Promise<any>
 }
