@@ -25,14 +25,34 @@ namespace CalendarApi {
 		return events.value.map(convert)
 	}
 	
+	export async function book(client: Client, from: Date, to: Date, subject: string): Promise<IEvent> {
+		const options = {
+			subject,
+			start: {
+				dateTime: from.toISOString(),//.replace(/\.[0-9]+/, ""),
+				timeZone: "UTC"
+			},
+			end: {
+				dateTime: to.toISOString(),//.replace(/\.[0-9]+/, "")
+				timeZone: "UTC"
+			}
+		}
+		
+		const event = await client.api("/me/events")
+			.post(options)
+		
+		return convert(event)
+	}
+	
 	function convert(event: EventApiResponseEvent): IEvent {
 		return ({
 			id: event.id.trim(),
 			subject: event.subject.trim(),
-			start: new Date(event.start.dateTime),
-			end: new Date(event.end.dateTime)
+			start: new Date(`${event.start.dateTime}Z`),
+			end: new Date(`${event.end.dateTime}Z`)
 		})
 	}
+	
 }
 
 export default CalendarApi

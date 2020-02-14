@@ -11,4 +11,6 @@ export interface ICalendarApi {
 	getRoom(id: string): Promise<IRoom | undefined>
 	
 	getEvents(roomId: string, from: Date, to: Date): Promise<Array<IEvent>>
+	
+	book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent | undefined>
 }

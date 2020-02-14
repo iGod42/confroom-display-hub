@@ -46,4 +46,10 @@ export class Office365 implements ICalendarApi {
 	async getEvents(roomId: string, from: Date, to: Date): Promise<Array<IEvent>> {
 		return CalendarApi.getEvents(this._clientPool.getClient(roomId), from, to)
 	}
+	
+	async book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent | undefined> {
+		const client = this._clientPool.getClient(roomId)
+		if (!client) return
+		return CalendarApi.book(client, from, to, subject)
+	}
 }

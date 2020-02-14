@@ -1,4 +1,4 @@
-import {Router} from "express"
+import {Request, Router} from "express"
 
 // @ts-ignore
 import apiConfig from "../calApiConfig"
@@ -12,19 +12,51 @@ function flattenArray<T>(array: Array<Array<T>>): Array<T> {
 	return array.reduce((flat, toFlatten) => flat.concat(toFlatten), [])
 }
 
-router.use("/:roomId/events", async (req, res) => {
-	let fromDate = new Date(),
-		toDate = new Date()
+type DateRange = {
+	from: Date,
+	to: Date
+}
+
+function validateDateParams(req: Request): DateRange | undefined {
 	const {from, to} = req.query
+	if (!from || !to)
+		return
 	try {
-		fromDate = new Date(from)
-		toDate = new Date(to)
-	} catch (e) {
+		const fromDate = new Date(from)
+		const toDate = new Date(to)
+		
+		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime()))
+			return
+		
+		return {from: fromDate, to: toDate}
+	} finally {
 	}
-	if (!from || !to || !fromDate || !toDate)
-		return res.status(404).end("from and to query parameters must be set to dates")
+}
+
+router.post("/:roomId/events", async (req, res) => {
+	const dateRange = validateDateParams(req)
+	if (!dateRange)
+		return res.status(400).end("from and to query parameters must be set to dates")
+	try {
+		const results = (await Promise.all(apis.map(api => api.book(req.params.roomId, dateRange.from, dateRange.to, "Reserved on room")))).filter(a => a)
+		
+		if (!results.length)
+			return res.sendStatus(404)
+		
+		return res.json(results[0])
+	} catch (e) {
+		if (process.env.NODE_ENV !== "production")
+			console.error(e)
+		return res.sendStatus(500)
+	}
+})
+
+router.use("/:roomId/events", async (req, res) => {
+	const dateRange = validateDateParams(req)
+	if (!dateRange)
+		return res.status(400).end("from and to query parameters must be set to dates")
 	
-	let foundRooms = await Promise.all(apis.map(api => api.getEvents(req.params.roomId, fromDate, toDate)))
+	let foundRooms = await Promise.all(apis.map(api => api.getEvents(req.params.roomId, dateRange.from, dateRange.to)))
 	// @ts-ignore
 	res.json(flattenArray(foundRooms))
 })
