@@ -1,5 +1,5 @@
 import {ICalendarApi, ITokenStorage} from "../interface"
-import {getAuthToken, getAuthUrl} from "./api/authorization"
+import {storeTokenFromAuthCode, getAuthUrl} from "./api/initialAuthorization"
 
 export interface IOffice365Options {
 	clientId: string,
@@ -22,13 +22,12 @@ export class Office365 implements ICalendarApi {
 	}
 	
 	async authCodeReceived(authorizationCode: string): Promise<any> {
-		const token = await getAuthToken({
+		return await storeTokenFromAuthCode({
 			client_secret: this._clientSecret,
 			client_id: this._clientId,
 			authorization_code: authorizationCode,
 			redirect_uri: this._redirectUrl
-		})
-		return this._tokenStorage.upsertToken(token)
+		}, this._tokenStorage)
 	}
 	
 	getAuthorizationUrl(): string {
