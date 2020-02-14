@@ -1,11 +1,13 @@
 import express, {ErrorRequestHandler} from "express"
 import authorizeRoute from "./routes/authorize"
+import roomsRoute from "./routes/rooms"
 import bodyParser from "body-parser"
 
 const app = express()
 app.use(bodyParser.json())
 
 app.use("/authorize", authorizeRoute)
+app.use("/rooms", roomsRoute)
 
 app.use("/", (req, res) => {
 	res.end("hello world")

@@ -1,6 +1,5 @@
 import {ITokenPair} from "../../interface"
-
-export const API_IDENTIFIER = "office365"
+import {API_IDENTIFIER} from "../index"
 
 export type Office365TokenResponse = {
 	token_type: string,

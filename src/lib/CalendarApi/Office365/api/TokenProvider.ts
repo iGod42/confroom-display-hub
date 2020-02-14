@@ -1,10 +1,11 @@
 import {ITokenPair} from "../../interface"
-import {API_IDENTIFIER, Office365TokenResponse} from "./TokenAdapter"
+import {Office365TokenResponse} from "./TokenAdapter"
 import fetch from "node-fetch"
 import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
 import convertFetchedToken from "./TokenAdapter"
 import {AuthenticationProvider} from "@microsoft/microsoft-graph-client"
 import {IOffice365Options} from "./IOffice365Options"
+import {API_IDENTIFIER} from "../index"
 
 export class TokenProvider implements AuthenticationProvider {
 	private readonly _userId: string

@@ -2,6 +2,9 @@ import {ICalendarApi} from "../interface"
 import {storeTokenFromAuthCode, getAuthUrl} from "./api/initialAuthorization"
 import {ClientPool} from "./api/ClientPool"
 import {IOffice365Options} from "./api/IOffice365Options"
+import {IRoom} from "../interface"
+
+export const API_IDENTIFIER = "office365"
 
 export class Office365 implements ICalendarApi {
 	private readonly _options: IOffice365Options
@@ -23,5 +26,9 @@ export class Office365 implements ICalendarApi {
 	
 	getAuthorizationUrl(): string {
 		return getAuthUrl(this._options.clientId, this._options.redirectUrl)
+	}
+	
+	async getAvailableRooms(): Promise<Array<IRoom>> {
+		return this._options.tokenStorage.getListOfStoredRooms(API_IDENTIFIER)
 	}
 }
