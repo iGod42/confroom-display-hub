@@ -21,7 +21,7 @@ app.use((req, res) => {
 
 const defaultErrorHandler: ErrorRequestHandler = ((err, req, res, next) => {
 	if (process.env.NODE_ENV !== "production")
-		console.error(err.stack)
+		console.error(err)
 	res.status(500).send("Something broke!")
 })
 

@@ -33,7 +33,7 @@ function validateDateParams(req: Request): DateRange | undefined {
 	}
 }
 
-router.post("/:roomId/events", async (req, res) => {
+router.post("/:roomId/events", async (req, res, next) => {
 	const dateRange = validateDateParams(req)
 	if (!dateRange)
 		return res.status(400).end("from and to query parameters must be set to dates")
@@ -45,37 +45,45 @@ router.post("/:roomId/events", async (req, res) => {
 		
 		return res.json(results[0])
 	} catch (e) {
-		if (process.env.NODE_ENV !== "production")
-			console.error(e)
-		return res.sendStatus(500)
+		next(e)
 	}
 })
 
-router.use("/:roomId/events", async (req, res) => {
+router.use("/:roomId/events", async (req, res, next) => {
 	const dateRange = validateDateParams(req)
 	if (!dateRange)
 		return res.status(400).end("from and to query parameters must be set to dates")
-	
-	let foundRooms = await Promise.all(apis.map(api => api.getEvents(req.params.roomId, dateRange.from, dateRange.to)))
-	// @ts-ignore
-	res.json(flattenArray(foundRooms))
+	try {
+		const foundRooms = await Promise.all(apis.map(api => api.getEvents(req.params.roomId, dateRange.from, dateRange.to)))
+		res.json(flattenArray(foundRooms))
+	} catch (e) {
+		next(e)
+	}
 })
 
-router.use("/:roomId", async (req, res) => {
-	let foundRooms: Array<IRoom | undefined> = (await Promise.all(apis.map(api => api.getRoom(req.params.roomId))))
-	
-	if (!foundRooms.length)
-		res.sendStatus(404)
-	
-	res.json(foundRooms[0])
+router.use("/:roomId", async (req, res, next) => {
+	try {
+		let foundRooms: Array<IRoom | undefined> = (await Promise.all(apis.map(api => api.getRoom(req.params.roomId))))
+		
+		if (!foundRooms.length)
+			res.sendStatus(404)
+		
+		res.json(foundRooms[0])
+	} catch (e) {
+		next(e)
+	}
 })
 
-router.use("/", async (req, res) => {
-	// noinspection TypeScriptValidateJSTypes
-	const rooms: Array<Array<IRoom>> = await Promise.all(apis.map(api => api.getAvailableRooms()))
-	
-	const allRooms = flattenArray(rooms)
-	res.json(allRooms)
+router.use("/", async (req, res, next) => {
+	try {
+		// noinspection TypeScriptValidateJSTypes
+		const rooms: Array<Array<IRoom>> = await Promise.all(apis.map(api => api.getAvailableRooms()))
+		
+		const allRooms = flattenArray(rooms)
+		res.json(allRooms)
+	} catch (e) {
+		next(e)
+	}
 })
 
 export default router
