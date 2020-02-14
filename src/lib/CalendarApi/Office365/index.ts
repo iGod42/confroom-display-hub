@@ -31,4 +31,14 @@ export class Office365 implements ICalendarApi {
 	async getAvailableRooms(): Promise<Array<IRoom>> {
 		return this._options.tokenStorage.getListOfStoredRooms(API_IDENTIFIER)
 	}
+	
+	async getRoom(id: string): Promise<IRoom | undefined> {
+		const storedToken = await this._options.tokenStorage.getToken(API_IDENTIFIER, id)
+		if (!storedToken) return
+		
+		return {
+			id: storedToken.belongsToUserId,
+			displayName: storedToken.belongsToUserDisplayName
+		}
+	}
 }
