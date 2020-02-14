@@ -10,9 +10,11 @@
   "author": "Robert Spari",
   "license": "ISC",
   "dependencies": {
+    "@microsoft/microsoft-graph-client": "^2.0.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "isomorphic-fetch": "^2.2.1",
     "nedb-promise": "^2.0.1",
     "node-fetch": "^2.6.0"
   },

@@ -1,22 +1,17 @@
-import {ITokenPair, ITokenStorage} from "../../interface"
+import {ITokenPair} from "../../interface"
 import {API_IDENTIFIER, Office365TokenResponse} from "./TokenAdapter"
 import fetch from "node-fetch"
 import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
 import convertFetchedToken from "./TokenAdapter"
+import {AuthenticationProvider} from "@microsoft/microsoft-graph-client"
+import {IOffice365Options} from "./IOffice365Options"
 
-type TokenProviderOptions = {
-	storage: ITokenStorage,
-	client_id: string,
-	client_secret: string,
-	redirect_uri: string
-}
-
-export class TokenProvider {
-	private _userId: string
-	private _options: TokenProviderOptions
+export class TokenProvider implements AuthenticationProvider {
+	private readonly _userId: string
+	private readonly _options: IOffice365Options
 	
-	constructor(usertId: string, options: TokenProviderOptions) {
-		this._userId = usertId
+	constructor(userId: string, options: IOffice365Options) {
+		this._userId = userId
 		this._options = options
 	}
 	
@@ -38,12 +33,12 @@ export class TokenProvider {
 				method: "POST",
 				headers: {"Content-Type": "application/x-www-form-urlencoded"},
 				body: getFormUrlEncodedBody({
-					client_id: this._options.client_id,
+					client_id: this._options.clientId,
 					scope: "",
 					refresh_token: storedToken.refresh_token,
-					redirect_uri: this._options.redirect_uri,
+					redirect_uri: this._options.redirectUrl,
 					grant_type: "refresh_token",
-					client_secret: this._options.client_secret
+					client_secret: this._options.clientSecret
 				})
 			}).then(res => res.json())
 			.then(res => res as Office365TokenResponse)
@@ -52,11 +47,11 @@ export class TokenProvider {
 			displayName: storedToken.belongsToUserDisplayName,
 			id: storedToken.belongsToUserId
 		})
-		await this._options.storage.upsertToken(token)
+		await this._options.tokenStorage.upsertToken(token)
 		return token
 	}
 	
 	private async getStoredToken(): Promise<ITokenPair> {
-		return this._options.storage.getToken(API_IDENTIFIER, this._userId)
+		return this._options.tokenStorage.getToken(API_IDENTIFIER, this._userId)
 	}
 }

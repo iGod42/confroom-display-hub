@@ -1,36 +1,27 @@
-import {ICalendarApi, ITokenStorage} from "../interface"
+import {ICalendarApi} from "../interface"
 import {storeTokenFromAuthCode, getAuthUrl} from "./api/initialAuthorization"
-
-export interface IOffice365Options {
-	clientId: string,
-	clientSecret: string,
-	redirectUrl: string,
-	tokenStorage: ITokenStorage
-}
+import {ClientPool} from "./api/ClientPool"
+import {IOffice365Options} from "./api/IOffice365Options"
 
 export class Office365 implements ICalendarApi {
-	private readonly _clientId: string
-	private readonly _clientSecret: string
-	private readonly _redirectUrl: string
-	private readonly _tokenStorage: ITokenStorage
+	private readonly _options: IOffice365Options
+	private readonly _clientPool: ClientPool
 	
 	constructor(options: IOffice365Options) {
-		this._clientId = options.clientId
-		this._clientSecret = options.clientSecret
-		this._redirectUrl = options.redirectUrl
-		this._tokenStorage = options.tokenStorage
+		this._options = options
+		this._clientPool = new ClientPool(this._options)
 	}
 	
 	async authCodeReceived(authorizationCode: string): Promise<any> {
 		return await storeTokenFromAuthCode({
-			client_secret: this._clientSecret,
-			client_id: this._clientId,
+			client_secret: this._options.clientSecret,
+			client_id: this._options.clientId,
 			authorization_code: authorizationCode,
-			redirect_uri: this._redirectUrl
-		}, this._tokenStorage)
+			redirect_uri: this._options.redirectUrl
+		}, this._options.tokenStorage)
 	}
 	
 	getAuthorizationUrl(): string {
-		return getAuthUrl(this._clientId, this._redirectUrl)
+		return getAuthUrl(this._options.clientId, this._options.redirectUrl)
 	}
 }
