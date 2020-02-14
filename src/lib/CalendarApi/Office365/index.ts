@@ -2,7 +2,8 @@ import {ICalendarApi} from "../interface"
 import {storeTokenFromAuthCode, getAuthUrl} from "./api/initialAuthorization"
 import {ClientPool} from "./api/ClientPool"
 import {IOffice365Options} from "./api/IOffice365Options"
-import {IRoom} from "../interface"
+import {IRoom, IEvent} from "../interface"
+import CalendarApi from "./api/CalendarApi"
 
 export const API_IDENTIFIER = "office365"
 
@@ -40,5 +41,9 @@ export class Office365 implements ICalendarApi {
 			id: storedToken.belongsToUserId,
 			displayName: storedToken.belongsToUserDisplayName
 		}
+	}
+	
+	async getEvents(roomId: string, from: Date, to: Date): Promise<Array<IEvent>> {
+		return CalendarApi.getEvents(this._clientPool.getClient(roomId), from, to)
 	}
 }
