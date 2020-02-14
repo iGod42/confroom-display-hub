@@ -19,9 +19,8 @@ export class TokenProvider implements AuthenticationProvider {
 	async getAccessToken(): Promise<string> {
 		const storedToken = await this.getStoredToken()
 		if (!storedToken) return ""
-		
 		// if more than 5 min are left on the access token return it
-		if (((new Date()).getTime() - storedToken.access_token_expiration.getTime()) / 60000 >= 5)
+		if ((storedToken.access_token_expiration.getTime() - (new Date()).getTime()) / 60000 >= 5)
 			return storedToken.access_token
 		
 		const refreshedToken = await this.refreshAccessToken(storedToken)
