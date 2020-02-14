@@ -2,9 +2,11 @@ import express, {ErrorRequestHandler} from "express"
 import authorizeRoute from "./routes/authorize"
 import roomsRoute from "./routes/rooms"
 import bodyParser from "body-parser"
+import cors from "cors"
 
 const app = express()
 app.use(bodyParser.json())
+app.use(cors())
 
 app.use("/authorize", authorizeRoute)
 app.use("/rooms", roomsRoute)

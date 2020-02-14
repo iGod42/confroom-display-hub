@@ -4,7 +4,7 @@ import {ITokenPair, ITokenStorage} from "../../interface"
 import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
 import convertFetchedToken, {Office365ProfileResponse, Office365TokenResponse} from "./TokenAdapter"
 
-const scope = ["offline_access", "Calendars.ReadWrite"]
+const scope = ["offline_access", "User.Read", "Calendars.ReadWrite"]
 
 export function getAuthUrl(client_Id: string, redirect_uri: string) {
 	return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?${
