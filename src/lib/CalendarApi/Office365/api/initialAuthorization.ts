@@ -2,9 +2,8 @@ import qs from "querystring"
 import fetch from "node-fetch"
 import {ITokenPair, ITokenStorage} from "../../interface"
 import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
-import convertFetchedToken, {Office365ProfileResponse, Office365TokenResponse} from "./tools/TokenAdapter"
+import convertFetchedToken, {Office365ProfileResponse, Office365TokenResponse} from "./TokenAdapter"
 
-const API_IDENTIFIER = "office365"
 const scope = ["offline_access", "Calendars.ReadWrite"]
 
 export function getAuthUrl(client_Id: string, redirect_uri: string) {
@@ -43,12 +42,12 @@ export async function storeTokenFromAuthCode(options: StoreAuthTokenOptions, tok
 	}).then(res => res.json())
 		.then(res => res as Office365TokenResponse)
 	const profile = await getProfileInfo(tokenResponse.access_token)
-	const token = convertFetchedToken(tokenResponse, profile, API_IDENTIFIER)
+	const token = convertFetchedToken(tokenResponse, profile)
 	await tokenStorage.upsertToken(token)
 	return token
 }
 
-async function getProfileInfo(authToken: string): Promise<Office365ProfileResponse> {
+export async function getProfileInfo(authToken: string): Promise<Office365ProfileResponse> {
 	return fetch("https://graph.microsoft.com/v1.0/me", {
 		headers: {
 			"Authorization": `Bearer ${authToken}`

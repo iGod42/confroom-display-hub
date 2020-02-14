@@ -1,4 +1,6 @@
-import {ITokenPair} from "../../../interface"
+import {ITokenPair} from "../../interface"
+
+export const API_IDENTIFIER = "office365"
 
 export type Office365TokenResponse = {
 	token_type: string,
@@ -16,8 +18,7 @@ export type Office365ProfileResponse = {
 
 export default function convertFetchedToken(
 	tokenResponse: Office365TokenResponse,
-	profileResponse: Office365ProfileResponse,
-	apiIdentifier: string): ITokenPair {
+	profileResponse: Office365ProfileResponse): ITokenPair {
 	const expires = new Date()
 	expires.setSeconds(expires.getSeconds() + tokenResponse.expires_in)
 	return {
@@ -25,7 +26,7 @@ export default function convertFetchedToken(
 		scope: tokenResponse.scope,
 		refresh_token: tokenResponse.refresh_token,
 		access_token_expiration: expires,
-		apiIdentifier: apiIdentifier,
+		apiIdentifier: API_IDENTIFIER,
 		belongsToUserId: profileResponse.id,
 		belongsToUserDisplayName: profileResponse.displayName
 	}
