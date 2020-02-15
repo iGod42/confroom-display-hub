@@ -47,7 +47,7 @@ namespace CalendarApi {
 	function convert(event: EventApiResponseEvent): IEvent {
 		return ({
 			id: event.id.trim(),
-			subject: event.subject.trim(),
+			subject: event.subject ? event.subject.trim() : "No Subject",
 			start: new Date(`${event.start.dateTime}Z`),
 			end: new Date(`${event.end.dateTime}Z`)
 		})
