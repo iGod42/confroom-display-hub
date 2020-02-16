@@ -18,7 +18,7 @@ namespace CalendarApi {
 	
 	export async function getEvents(client: Client, from: Date, to: Date): Promise<Array<IEvent>> {
 		const events: EventApiResponse = await client.api("/me/events")
-			.filter(`start/dateTime ge '${from.toISOString()}' and end/dateTime lt '${to.toISOString()}'`)
+			.filter(`start/dateTime ge '${from.toISOString()}' and end/dateTime le '${to.toISOString()}'`)
 			.select(["id", "subject", "start", "end"])
 			.get()
 		
