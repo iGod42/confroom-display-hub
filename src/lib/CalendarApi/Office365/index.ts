@@ -1,19 +1,18 @@
 import {ICalendarApi} from "../interface"
-import {storeTokenFromAuthCode, getAuthUrl} from "./api/initialAuthorization"
-import {ClientPool} from "./api/ClientPool"
-import {IOffice365Options} from "./api/IOffice365Options"
+import {storeTokenFromAuthCode, getAuthUrl} from "./GraphApi/lib/authorization/initialAuthorization"
+import ApiPool from "./ApiPool"
+import {GraphApiOptions} from "./GraphApi"
 import {IRoom, IEvent} from "../interface"
-import CalendarApi from "./api/CalendarApi"
 
 export const API_IDENTIFIER = "office365"
 
 export class Office365 implements ICalendarApi {
-	private readonly _options: IOffice365Options
-	private readonly _clientPool: ClientPool
+	private readonly _options: GraphApiOptions
+	private readonly _apiPool: ApiPool
 	
-	constructor(options: IOffice365Options) {
+	constructor(options: GraphApiOptions) {
 		this._options = options
-		this._clientPool = new ClientPool(this._options)
+		this._apiPool = new ApiPool(this._options)
 	}
 	
 	async authCodeReceived(authorizationCode: string): Promise<any> {
@@ -35,21 +34,17 @@ export class Office365 implements ICalendarApi {
 	
 	async getRoom(id: string): Promise<IRoom | undefined> {
 		const storedToken = await this._options.tokenStorage.getToken(API_IDENTIFIER, id)
-		if (!storedToken) return
-		
-		return {
+		return !storedToken ? undefined : {
 			id: storedToken.belongsToUserId,
 			displayName: storedToken.belongsToUserDisplayName
 		}
 	}
 	
 	async getEvents(roomId: string, from: Date, to: Date): Promise<Array<IEvent>> {
-		return CalendarApi.getEvents(this._clientPool.getClient(roomId), from, to)
+		return this._apiPool.getApi(roomId).getEvents(from, to)
 	}
 	
-	async book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent | undefined> {
-		const client = this._clientPool.getClient(roomId)
-		if (!client) return
-		return CalendarApi.book(client, from, to, subject)
+	async book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent> {
+		return this._apiPool.getApi(roomId).book(from, to, subject)
 	}
 }

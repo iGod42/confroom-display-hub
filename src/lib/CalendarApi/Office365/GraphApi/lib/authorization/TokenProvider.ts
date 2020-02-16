@@ -1,17 +1,16 @@
-import {ITokenPair} from "../../interface"
-import {Office365TokenResponse} from "./TokenAdapter"
+import {ITokenPair} from "../../../../interface"
 import fetch from "node-fetch"
-import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
+import {getFormUrlEncodedBody} from "../../../../../tools/getFormUrlEncodedBody"
 import convertFetchedToken from "./TokenAdapter"
 import {AuthenticationProvider} from "@microsoft/microsoft-graph-client"
-import {IOffice365Options} from "./IOffice365Options"
-import {API_IDENTIFIER} from "../index"
+import {API_IDENTIFIER} from "../../../index"
+import {GraphApiOptions, TokenResponse} from "../interface"
 
 export class TokenProvider implements AuthenticationProvider {
 	private readonly _userId: string
-	private readonly _options: IOffice365Options
+	private readonly _options: GraphApiOptions
 	
-	constructor(userId: string, options: IOffice365Options) {
+	constructor(userId: string, options: GraphApiOptions) {
 		this._userId = userId
 		this._options = options
 	}
@@ -41,7 +40,7 @@ export class TokenProvider implements AuthenticationProvider {
 					client_secret: this._options.clientSecret
 				})
 			}).then(res => res.json())
-			.then(res => res as Office365TokenResponse)
+			.then(res => res as TokenResponse)
 		
 		const token = convertFetchedToken(response, {
 			displayName: storedToken.belongsToUserDisplayName,

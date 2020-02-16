@@ -1,6 +1,6 @@
-import {ITokenStorage} from "../../interface"
+import {ITokenStorage} from "../../../../interface"
 
-export interface IOffice365Options {
+export type GraphApiOptions = {
 	clientId: string,
 	clientSecret: string,
 	redirectUrl: string,

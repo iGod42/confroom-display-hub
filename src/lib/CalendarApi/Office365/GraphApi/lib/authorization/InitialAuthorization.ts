@@ -1,8 +1,9 @@
 import qs from "querystring"
 import fetch from "node-fetch"
-import {ITokenPair, ITokenStorage} from "../../interface"
-import {getFormUrlEncodedBody} from "../../../tools/getFormUrlEncodedBody"
-import convertFetchedToken, {Office365ProfileResponse, Office365TokenResponse} from "./TokenAdapter"
+import {ITokenPair, ITokenStorage} from "../../../../interface"
+import {getFormUrlEncodedBody} from "../../../../../tools/getFormUrlEncodedBody"
+import convertFetchedToken from "./TokenAdapter"
+import {ProfileResponse, TokenResponse} from "../interface"
 
 const scope = ["offline_access", "User.Read", "Calendars.ReadWrite"]
 
@@ -40,18 +41,18 @@ export async function storeTokenFromAuthCode(options: StoreAuthTokenOptions, tok
 			client_secret: options.client_secret
 		})
 	}).then(res => res.json())
-		.then(res => res as Office365TokenResponse)
+		.then(res => res as TokenResponse)
 	const profile = await getProfileInfo(tokenResponse.access_token)
 	const token = convertFetchedToken(tokenResponse, profile)
 	await tokenStorage.upsertToken(token)
 	return token
 }
 
-export async function getProfileInfo(authToken: string): Promise<Office365ProfileResponse> {
+export async function getProfileInfo(authToken: string): Promise<ProfileResponse> {
 	return fetch("https://graph.microsoft.com/v1.0/me", {
 		headers: {
 			"Authorization": `Bearer ${authToken}`
 		}
 	}).then(res => res.json())
-		.then(res => res as Office365ProfileResponse)
+		.then(res => res as ProfileResponse)
 }
