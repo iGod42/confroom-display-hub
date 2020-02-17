@@ -2,4 +2,5 @@ export {ICalendarApi} from "./ICalendarApi"
 export {ITokenPair} from "./ITokenPair"
 export {ITokenStorage} from "./ITokenStorage"
 export {IRoom} from "./IRoom"
-export {IEvent} from './IEvent'
+export {IEvent} from "./IEvent"
+export {EventUpdate} from "./EventUpdate"
