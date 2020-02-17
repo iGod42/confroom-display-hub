@@ -66,7 +66,7 @@ export default class CachedEventsApi extends EventEmitter {
 		const {events, deltaToken} = await DeltaQuery.getIncrement(this._client, callDeltaToken)
 		
 		this._cachedEvents = this._cachedEvents
-			.filter(evt => !events.find(change => change.id === evt.id && change["@removed"])) // filter deleted ones
+			.filter(evt => !events.find(change => change.id === evt.id)) // filter deleted ones
 			.concat(events
 				.filter(change => !change["@removed"]) // filter out the removed ones to not add them again
 				.map(CachedEventsApi.convert) // and map them to be nice events
