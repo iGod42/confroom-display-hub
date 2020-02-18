@@ -64,25 +64,25 @@ export default class CachedEventsApi extends EventEmitter {
 	
 	private async incrementalRefresh(callDeltaToken: string) {
 		const {events, deltaToken} = await DeltaQuery.getIncrement(this._client, callDeltaToken)
-		
-		this._cachedEvents = this._cachedEvents
-			.filter(evt => !events.find(change => change.id === evt.id)) // filter deleted ones
-			.concat(events
-				.filter(change => !change["@removed"]) // filter out the removed ones to not add them again
-				.map(Converter.convert) // and map them to be nice events
-			)
-		
-		const updates = events
-			.map<EventUpdate>(evt => ({
-				event: evt["@removed"] ? undefined : Converter.convert(evt),
-				type: evt["@removed"] ? "removed" : "addedOrUpdated",
-				id: evt.id
-			}))
-		
-		if (updates.length)
-			// in this case all events are necessarily updates
-			this.emit("update", updates)
-		
+		if (events.length) {
+			this._cachedEvents = this._cachedEvents
+				.filter(evt => !events.find(change => change.id === evt.id)) // filter deleted ones
+				.concat(events
+					.filter(change => !change["@removed"]) // filter out the removed ones to not add them again
+					.map(Converter.convert) // and map them to be nice events
+				)
+			
+			const updates = events
+				.map<EventUpdate>(evt => ({
+					event: evt["@removed"] ? undefined : Converter.convert(evt),
+					type: evt["@removed"] ? "removed" : "addedOrUpdated",
+					id: evt.id
+				}))
+			
+			if (updates.length)
+				// in this case all events are necessarily updates
+				this.emit("update", updates)
+		}
 		this._deltaToken = deltaToken
 	}
 	
