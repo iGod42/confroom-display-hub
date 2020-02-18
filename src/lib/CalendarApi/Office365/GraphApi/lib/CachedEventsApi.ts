@@ -3,8 +3,8 @@ import {Client} from "@microsoft/microsoft-graph-client"
 import {EventEmitter} from "events"
 
 import {EventUpdate, IEvent} from "../../../interface"
-import {EventApiResponseEvent} from "./interface"
 import DeltaQuery from "./DeltaQuery"
+import Converter from "./Converter"
 
 function getStartOfUTCDay(date: Date): Date {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
@@ -47,7 +47,7 @@ export default class CachedEventsApi extends EventEmitter {
 		const updates = events
 			.filter(evt => !this._cachedEvents.find(ee => ee.id === evt.id)) // find all added ones
 			.map<EventUpdate>(evt => ({
-				event: CachedEventsApi.convert(evt), // no deleted check necessary
+				event: Converter.convert(evt), // no deleted check necessary
 				id: evt.id,
 				type: "addedOrUpdated"
 			}))
@@ -55,7 +55,7 @@ export default class CachedEventsApi extends EventEmitter {
 		// update cached shit
 		this._deltaToken = deltaToken
 		this._lastRefreshDay = referenceDate
-		this._cachedEvents = events.map(CachedEventsApi.convert)
+		this._cachedEvents = events.map(Converter.convert)
 		
 		if (updates.length)
 			// raise change events
@@ -69,12 +69,12 @@ export default class CachedEventsApi extends EventEmitter {
 			.filter(evt => !events.find(change => change.id === evt.id)) // filter deleted ones
 			.concat(events
 				.filter(change => !change["@removed"]) // filter out the removed ones to not add them again
-				.map(CachedEventsApi.convert) // and map them to be nice events
+				.map(Converter.convert) // and map them to be nice events
 			)
 		
 		const updates = events
 			.map<EventUpdate>(evt => ({
-				event: evt["@removed"] ? undefined : CachedEventsApi.convert(evt),
+				event: evt["@removed"] ? undefined : Converter.convert(evt),
 				type: evt["@removed"] ? "removed" : "addedOrUpdated",
 				id: evt.id
 			}))
@@ -84,17 +84,6 @@ export default class CachedEventsApi extends EventEmitter {
 			this.emit("update", updates)
 		
 		this._deltaToken = deltaToken
-	}
-	
-	private static convert(event: EventApiResponseEvent): IEvent {
-		if (!event.start || !event.end)
-			throw new Error("Start and end required for event to be converted")
-		return ({
-			id: event.id.trim(),
-			subject: event.subject ? event.subject.trim() : "No Subject",
-			start: new Date(`${event.start.dateTime}Z`),
-			end: new Date(`${event.end.dateTime}Z`)
-		})
 	}
 	
 	get Events(): IEvent[] {
