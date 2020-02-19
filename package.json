@@ -1,14 +1,22 @@
 {
-  "name": "conf_room_display_hub",
+  "name": "confroom-display-hub",
   "version": "0.0.1",
-  "description": "Conference Room Display Hub",
-  "main": "index.js",
+  "description": "A hub to expose conference room status and booking functions ",
+  "main": "./src/index.ts",
   "scripts": {
     "build": "tsc --outDir dist",
     "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts"
   },
   "author": "Robert Spari",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iGod42/confroom-display-hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iGod42/confroom-display-hub/issues"
+  },
+  "homepage": "https://github.com/iGod42/confroom-display-hub#readme",
   "dependencies": {
     "@microsoft/microsoft-graph-client": "^2.0.0",
     "body-parser": "^1.19.0",
