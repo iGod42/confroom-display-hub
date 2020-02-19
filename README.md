@@ -20,3 +20,4 @@ Basically expose basic calendar information and functionality to clients, while 
 - Get list of events for the current day, (it's actually 3 days to account for possible time zone issues)
 - Update the time and subject of an event
 - Create events. Why? The idea is to have a button on the display to quickly reserve the room assuming it's available
+- Socket.io to receive updates about events
