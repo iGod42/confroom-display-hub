@@ -57,6 +57,24 @@ class GraphApi extends EventEmitter {
 		
 		return Converter.convert(event)
 	}
+	
+	async update(event: IEvent): Promise<IEvent> {
+		const {id, start, end, subject, isAllDay} = event
+		const res = await this._client.api(`/me/events/${id}`)
+			.patch({
+				subject,
+				isAllDay,
+				start: {
+					dateTime: start.toISOString(),//.replace(/\.[0-9]+/, ""),
+					timeZone: "UTC"
+				},
+				end: {
+					dateTime: end.toISOString(),//.replace(/\.[0-9]+/, "")
+					timeZone: "UTC"
+				}
+			})
+		return Converter.convert(res)
+	}
 }
 
 export {GraphApiOptions} from "./lib/interface"

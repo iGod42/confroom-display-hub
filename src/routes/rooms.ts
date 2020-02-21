@@ -49,6 +49,22 @@ router.post("/:roomId/events", async (req, res, next) => {
 	}
 })
 
+router.patch("/:roomId/events/:eventId", async (req, res, next) => {
+	try {
+		const changedEvent = (await Promise.all(apis.map(api => api.update(req.params.roomId, {
+			...req.body,
+			id: req.params.eventId
+		})))).find(a => a)
+		
+		if (!changedEvent)
+			return res.sendStatus(404)
+		
+		return res.json(changedEvent)
+	} catch (e) {
+		next(e)
+	}
+})
+
 router.use("/:roomId/events", async (req, res, next) => {
 	const dateRange = validateDateParams(req)
 	if (!dateRange)

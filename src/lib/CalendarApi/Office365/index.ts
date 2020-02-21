@@ -62,4 +62,12 @@ export class Office365 extends EventEmitter implements ICalendarApi {
 	async book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent> {
 		return this._apiPool.getApi(roomId).book(from, to, subject)
 	}
+	
+	update(roomId: string, event: IEvent): Promise<IEvent> {
+		return this._apiPool.getApi(roomId).update({
+			...event,
+			start: new Date(event.start),
+			end: new Date(event.end)
+		})
+	}
 }

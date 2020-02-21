@@ -15,6 +15,8 @@ export interface ICalendarApi {
 	
 	book(roomId: string, from: Date, to: Date, subject: string): Promise<IEvent | undefined>
 	
+	update(roomId: string, event: IEvent): Promise<IEvent>
+	
 	on(eventName: "error", callback: (roomId: string, error: string | Error) => void): void
 	
 	on(eventName: "update", callback: (roomId: string, updates: EventUpdate[]) => void): void
