@@ -4,7 +4,7 @@ import {getFormUrlEncodedBody} from "../../../../../tools/getFormUrlEncodedBody"
 import convertFetchedToken from "./TokenAdapter"
 import {AuthenticationProvider} from "@microsoft/microsoft-graph-client"
 import {API_IDENTIFIER} from "../../../index"
-import {GraphApiOptions, TokenResponse} from "../interface"
+import {GraphApiOptions} from "../interface"
 
 export class TokenProvider implements AuthenticationProvider {
 	private readonly _userId: string
@@ -22,8 +22,12 @@ export class TokenProvider implements AuthenticationProvider {
 		if ((storedToken.access_token_expiration.getTime() - (new Date()).getTime()) / 60000 >= 5)
 			return storedToken.access_token
 		
-		const refreshedToken = await this.refreshAccessToken(storedToken)
-		return refreshedToken.access_token
+		try {
+			const refreshedToken = await this.refreshAccessToken(storedToken)
+			return refreshedToken.access_token
+		} catch (e) {
+			return ""
+		}
 	}
 	
 	private async refreshAccessToken(storedToken: ITokenPair): Promise<ITokenPair> {
@@ -40,7 +44,10 @@ export class TokenProvider implements AuthenticationProvider {
 					client_secret: this._options.clientSecret
 				})
 			}).then(res => res.json())
-			.then(res => res as TokenResponse)
+		
+		// if there is an error the refresh failed
+		if (response.error)
+			throw response.error
 		
 		const token = convertFetchedToken(response, {
 			displayName: storedToken.belongsToUserDisplayName,

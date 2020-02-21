@@ -28,7 +28,9 @@ class GraphApi extends EventEmitter {
 		
 		// just passing
 		api.on("update", (events) => this.emit("update", user_id, events))
-		api.on("error", (error) => this.emit("error", user_id, error))
+		api.on("error", (e) => {
+			this.emit("error", user_id, e?.statusCode || 500)
+		})
 		
 		return api
 	}

@@ -8,9 +8,10 @@ function registerListener(api: ICalendarApi, io: Server) {
 	api.on("update", function (roomId, events) {
 		io.to(roomId).emit("update", events)
 	})
-	/*	api.on("error", function () {
-			console.log("error", new Date().toISOString(), arguments)
-		})*/
+	api.on("error", function (roomId, error) {
+		console.error("error", new Date().toISOString(), arguments)
+		io.to(roomId).emit("error", error)
+	})
 }
 
 export default function (server: httpsServer | httpServer) {

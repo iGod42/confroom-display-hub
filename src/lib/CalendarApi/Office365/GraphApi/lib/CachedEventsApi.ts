@@ -28,16 +28,26 @@ export default class CachedEventsApi extends EventEmitter {
 		this.refreshCache(options.refreshPeriodMS || 5000).then()
 	}
 	
-	private async refreshCache(autoRefresh?: number) {
+	private async refreshCache(autoRefresh: number) {
+		let refreshTime = autoRefresh
 		
-		// full refresh needed
-		if (!this._deltaToken || !this._lastRefreshDay || (getStartOfUTCDay(new Date()).getTime() !== this._lastRefreshDay.getTime()))
-			// any event that was deleted since the last incremental sync will not be pushed as deleted ... tough titties
-			await this.fullRefresh()
-		else
-			await this.incrementalRefresh(this._deltaToken)
-		
-		if (autoRefresh) setTimeout(() => this.refreshCache(autoRefresh), autoRefresh)
+		try {
+			// full refresh needed
+			if (!this._deltaToken || !this._lastRefreshDay || (getStartOfUTCDay(new Date()).getTime() !== this._lastRefreshDay.getTime()))
+				// any event that was deleted since the last incremental sync will not be pushed as deleted ... tough titties
+				await this.fullRefresh()
+			else
+				await this.incrementalRefresh(this._deltaToken)
+		} catch (e) {
+			// if we have a 401 there's no need to retry manual action is required
+			if (e?.statusCode === 401) {
+				// slow refresh by 10 times but no longer than 5 min´
+				refreshTime = Math.min(refreshTime * 10, 300000)
+			}
+			
+			this.emit("error", e)
+		}
+		setTimeout(() => this.refreshCache(refreshTime), refreshTime)
 	}
 	
 	private async fullRefresh() {
