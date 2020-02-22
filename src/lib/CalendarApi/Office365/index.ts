@@ -1,5 +1,5 @@
 import {ICalendarApi} from "../interface"
-import {storeTokenFromAuthCode, getAuthUrl} from "./GraphApi/lib/authorization/initialAuthorization"
+import {storeTokenFromAuthCode, getAuthUrl} from "./GraphApi/lib/authorization/InitialAuthorization"
 import ApiPool from "./ApiPool"
 import {GraphApiOptions} from "./GraphApi"
 import {IRoom, IEvent} from "../interface"
