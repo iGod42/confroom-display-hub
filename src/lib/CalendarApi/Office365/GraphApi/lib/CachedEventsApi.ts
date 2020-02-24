@@ -30,7 +30,7 @@ export default class CachedEventsApi extends EventEmitter {
 	
 	private async refreshCache(autoRefresh: number) {
 		let refreshTime = autoRefresh
-		
+		console.log("refresh started")
 		try {
 			// full refresh needed
 			if (!this._deltaToken || !this._lastRefreshDay || (getStartOfUTCDay(new Date()).getTime() !== this._lastRefreshDay.getTime()))
@@ -89,6 +89,7 @@ export default class CachedEventsApi extends EventEmitter {
 					id: evt.id
 				}))
 			
+			console.log(updates)
 			if (updates.length)
 				// in this case all events are necessarily updates
 				this.emit("update", updates)
