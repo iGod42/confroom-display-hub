@@ -26,6 +26,8 @@
     "isomorphic-fetch": "^2.2.1",
     "nedb-promise": "^2.0.1",
     "node-fetch": "^2.6.0",
+    "passport": "^0.4.1",
+    "passport-custom": "^1.1.1",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
