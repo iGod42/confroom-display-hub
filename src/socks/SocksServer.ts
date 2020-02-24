@@ -30,4 +30,6 @@ export default function (server: httpsServer | httpServer) {
 			console.log("user disconnected", socket.handshake.query.roomId)
 		})
 	})
+	
+	io.on("update", (a: any) => console.log("update", a))
 }
