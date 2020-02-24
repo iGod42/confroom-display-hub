@@ -25,5 +25,9 @@ export default function (server: httpsServer | httpServer) {
 	
 	io.on("connection", function (socket) {
 		socket.join(socket.handshake.query.roomId)
+		console.log("connected ", socket.handshake.query.roomId)
+		socket.on("disconnect", function () {
+			console.log("user disconnected", socket.handshake.query.roomId)
+		})
 	})
 }
